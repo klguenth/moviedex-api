@@ -1,26 +1,40 @@
 const express = require('express');
 const morgan = require('morgan');
+const movies = require('./data.json');
+const cors = require('cors');
 
 const app = express();
+
 app.use(morgan('dev'));
 app.use(cors());
 
-const movies = require('./data.js');
-const cors = require('cors');
-
 app.get('/movies', (req, res) => {
-    const { search = " " } = req.query;
+    const { country, genre, rating } = req.query;
 
-    let results = movies
-    .filter(movie =>
-        movie
-            .country
-            .toLowerCase()
-            .includes(search.toLowerCase()));
+    if (country) {
+        let results = movies.filter(movie =>
+            movie
+                .country
+                .toLowerCase()
+                .includes(country.toLowerCase()));
+    } else if (genre) {
+        let results = movies.filter(movie =>
+            movie
+                .genre
+                .toLowerCase()
+                .includes(genre.toLowerCase()));
+    } else if (rating) {
+        let results = movies.filter(movie =>
+            movie.avg_vote >= rating);
+    } else {
+        results = movies;
+    }
+    console.log("results = ", results);
+    res.status(200).json(results);
+});
 
-    res
-        .json(results);
-    
+app.get('*', (req, res) => {
+    res.status(404).json({message: "Not found"})
 });
 
 const PORT = 8000
