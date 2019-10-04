@@ -14,17 +14,9 @@ app.get('/movies', (req, res) => {
     let results = movies
     .filter(movie =>
         movie
-            .film_title
+            .country
             .toLowerCase()
             .includes(search.toLowerCase()));
-
-    if (req.query.genre) {
-        response = response
-            .filter(movie =>
-                movie
-                    .country
-                    .toLowerCase())
-    }
 
     res
         .json(results);
