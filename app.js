@@ -17,7 +17,7 @@ app.get('/movies', (req, res) => {
             .film_title
             .toLowerCase()
             .includes(search.toLowerCase()));
-            
+
     if (req.query.genre) {
         response = response
             .filter(movie =>
@@ -31,6 +31,7 @@ app.get('/movies', (req, res) => {
     
 });
 
-app.listen(8000, () => {
-    console.log('Express server is listening on port 8000');
+const PORT = 8000
+app.listen(PORT, () => {
+    console.log(`Server listening at http://localhost:${PORT}`);
 });
