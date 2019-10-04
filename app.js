@@ -3,9 +3,24 @@ const morgan = require('morgan');
 
 const app = express();
 app.use(morgan('dev'));
+app.use(cors());
 
-app.get('/movie', (req, res) => {
-    res.status(200).send('Movie Time!');
+const movies = require('./data.js');
+const cors = require('cors');
+
+app.get('/movies', (req, res) => {
+    const { search = " " } = req.query;
+
+    let results = movies
+    .filter(movie =>
+        movie
+            .film_title
+            .toLowerCase()
+            .includes(search.toLowerCase()));
+
+    res
+        .json(results);
+    
 });
 
 app.listen(8000, () => {
