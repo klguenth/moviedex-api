@@ -3,11 +3,13 @@ const express = require('express');
 const morgan = require('morgan');
 const MOVIES = require('./data.json');
 const cors = require('cors');
+const helmet = require('helmet')
 
 const app = express();
 
 app.use(morgan('dev'));
 app.use(cors());
+app.use(helmet());
 
 app.use(function validateBearerToken(req, res, next) {
     const apiToken = process.env.API_TOKEN
@@ -41,10 +43,6 @@ app.get('/movie', function handleGetMovie(req, res) {
     
     res.json(response)
     res.status(200).json(results);
-});
-
-app.get('*', (req, res) => {
-    res.status(404).json({message: "Not found"})
 });
 
 const PORT = 8000
