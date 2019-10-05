@@ -1,6 +1,7 @@
+require('dotenv').config()
 const express = require('express');
 const morgan = require('morgan');
-const movies = require('./data.json');
+const MOVIES = require('./data.json');
 const cors = require('cors');
 
 const app = express();
@@ -8,28 +9,37 @@ const app = express();
 app.use(morgan('dev'));
 app.use(cors());
 
-app.get('/movies', (req, res) => {
-    const { country, genre, rating } = req.query;
-
-    if (country) {
-        let results = movies.filter(movie =>
-            movie
-                .country
-                .toLowerCase()
-                .includes(country.toLowerCase()));
-    } else if (genre) {
-        let results = movies.filter(movie =>
-            movie
-                .genre
-                .toLowerCase()
-                .includes(genre.toLowerCase()));
-    } else if (rating) {
-        let results = movies.filter(movie =>
-            movie.avg_vote >= rating);
-    } else {
-        results = movies;
+app.use(function validateBearerToken(req, res, next) {
+    const apiToken = process.env.API_TOKEN
+    const authToken = req.get('Authorization')
+    if (!authToken || authToken.split(' ')[1] !== apiToken) {
+        return res.status(401).json({ error: 'Unauthorized request' })
     }
-    console.log("results = ", results);
+    next()
+})
+
+app.get('/movie', function handleGetMovie(req, res) {
+    let response = MOVIES;
+    
+    if (req.query.genre) {
+        response = response.filter(movie =>
+        movie.genre.toLowerCase().includes(req.query.genre.toLowerCase())
+        )
+    }
+    
+    if (req.query.country) {
+        response = response.filter(movie =>
+        movie.country.toLowerCase().includes(req.query.country.toLowerCase())
+        )
+    }
+    
+    if (req.query.avg_vote) {
+        response = response.filter(movie =>
+        Number(movie.avg_vote) >= Number(req.query.avg_vote)
+        )
+    }
+    
+    res.json(response)
     res.status(200).json(results);
 });
 
