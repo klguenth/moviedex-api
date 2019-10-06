@@ -58,4 +58,4 @@ app.get('/movie', function handleGetMovie(req, res) {
 const PORT = process.env.PORT || 8000
 app.listen(PORT, () => {
     console.log(`Server listening at http://localhost:${PORT}`);
-});
+})
